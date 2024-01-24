@@ -35,18 +35,22 @@ jobs:
           foreach ($inputFile in $inputFiles)
           {
             $fileNameWithoutExtension = $($inputFile.Name.ToLower().Replace(".jpg","").Replace(".png","").Replace(".gif",""))
-            $outFilePath = "./outputs/${fileNameWithoutExtension}.jxl"
+            $outputFilePath = "./outputs/${fileNameWithoutExtension}.jxl"
             $sw.Restart()
             if ($inputFile.Name -like "*jpg")
             {
-              ./libjxl/tools/cjxl $inputFile.FullName $outFilePath -q 90 --lossless_jpeg=0
+              ./libjxl/tools/cjxl $inputFile.FullName $outputFilePath -q 90 --lossless_jpeg=0
             }
             else
             {
-              ./libjxl/tools/cjxl $inputFile.FullName $outFilePath -q 90
+              ./libjxl/tools/cjxl $inputFile.FullName $outputFilePath -q 90
             }
             $sw.Stop()
-            echo "| $($inputFile.Name) | $([math]::ceiling($inputFile.Length / 1KB))KB | ${fileNameWithoutExtension}.jxl | $([math]::ceiling((Get-Item $outFilePath).Length/1KB))KB | $($sw.Elapsed.TotalSeconds)s |" >> $resultsFile
+            
+            $inputFileSize = [math]::ceiling($inputFile.Length / 1KB)
+            $outputFileSize = [math]::ceiling((Get-Item $outputFilePath).Length / 1KB)
+            $compressionRatio = (($outputFileSize / $inputFileSize) * 100) - 100
+            echo "| $($inputFile.Name) | $($inputFileSize)KB | ${fileNameWithoutExtension}.jxl | $($outputFileSize)KB | $($compressionRatio)% | $($sw.Elapsed.TotalSeconds)s |" >> $resultsFile
           }
 
       - name: Upload to workflow results

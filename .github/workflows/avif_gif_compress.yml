@@ -19,7 +19,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install ffmpeg
-          sudo apt install libavif
+          sudo apt install libavif-bin
       
       - name: Compress images and measure times
         shell: pwsh
@@ -34,11 +34,15 @@ jobs:
           foreach ($inputFile in $inputFiles)
           {
             $fileNameWithoutExtension = $($inputFile.Name.ToLower().Replace(".jpg","").Replace(".png","").Replace(".gif",""))
-            $outFilePath = "./outputs/${fileNameWithoutExtension}.avif"
+            $outputFilePath = "./outputs/${fileNameWithoutExtension}.avif"
             $sw.Restart()
-            ffmpeg -i $inputFile.FullName -strict -1 -f yuv4mpegpipe -pix_fmt yuva444p - | avifenc --stdin $outFilePath
+            ffmpeg -i $inputFile.FullName -strict -1 -f yuv4mpegpipe -pix_fmt yuva444p - | avifenc --stdin $outputFilePath
             $sw.Stop()
-            echo "| $($inputFile.Name) | $([math]::ceiling($inputFile.Length / 1KB))KB | ${fileNameWithoutExtension}.avif | $([math]::ceiling((Get-Item $outFilePath).Length/1KB))KB | $($sw.Elapsed.TotalSeconds)s |" >> $resultsFile
+
+            $inputFileSize = [math]::ceiling($inputFile.Length / 1KB)
+            $outputFileSize = [math]::ceiling((Get-Item $outputFilePath).Length / 1KB)
+            $compressionRatio = (($outputFileSize / $inputFileSize) * 100) - 100
+            echo "| $($inputFile.Name) | $($inputFileSize)KB | ${fileNameWithoutExtension}.avif | $($outputFileSize)KB | $($compressionRatio)% | $($sw.Elapsed.TotalSeconds)s |" >> $resultsFile
           }
 
       - name: Upload to workflow results

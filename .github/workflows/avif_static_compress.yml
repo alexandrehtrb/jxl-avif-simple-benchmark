@@ -36,11 +36,15 @@ jobs:
           foreach ($inputFile in $inputFiles)
           {
             $fileNameWithoutExtension = $($inputFile.Name.ToLower().Replace(".jpg","").Replace(".png","").Replace(".gif",""))
-            $outFilePath = "./outputs/${fileNameWithoutExtension}.avif"
+            $outputFilePath = "./outputs/${fileNameWithoutExtension}.avif"
             $sw.Restart()
-            ./libcavif/linux-generic/cavif $inputFile.FullName -o $outFilePath -Q 90 -f
+            ./libcavif/linux-generic/cavif $inputFile.FullName -o $outputFilePath -Q 90 -f
             $sw.Stop()
-            echo "| $($inputFile.Name) | $([math]::ceiling($inputFile.Length / 1KB))KB | ${fileNameWithoutExtension}.avif | $([math]::ceiling((Get-Item $outFilePath).Length/1KB))KB | $($sw.Elapsed.TotalSeconds)s |" >> $resultsFile
+            
+            $inputFileSize = [math]::ceiling($inputFile.Length / 1KB)
+            $outputFileSize = [math]::ceiling((Get-Item $outputFilePath).Length / 1KB)
+            $compressionRatio = (($outputFileSize / $inputFileSize) * 100) - 100
+            echo "| $($inputFile.Name) | $($inputFileSize)KB | ${fileNameWithoutExtension}.avif | $($outputFileSize)KB | $($compressionRatio)% | $($sw.Elapsed.TotalSeconds)s |" >> $resultsFile
           }
 
       - name: Upload to workflow results
