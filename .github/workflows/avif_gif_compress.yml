@@ -45,7 +45,7 @@ jobs:
             $outputFileSize = [math]::ceiling((Get-Item $outputFilePath).Length / 1KB)
             $compressionRatio = [math]::floor(($outputFileSize / $inputFileSize) * 100) - 100
             $elapsedTimeInSeconds = [math]::ceiling($sw.Elapsed.TotalSeconds)
-            echo "| $($inputFile.Name) | $($inputFileSize)KB | ${fileNameWithoutExtension}.avif | $($outputFileSize)KB | $($compressionRatio)% | $($elapsedTimeInSeconds)s |" >> $resultsFile
+            echo "| $($inputFile.Name) | $($inputFileSize)KB | $($outputFileSize)KB | $($compressionRatio)% | $($elapsedTimeInSeconds)s |" >> $resultsFile
           }
 
       - name: Upload to workflow results
