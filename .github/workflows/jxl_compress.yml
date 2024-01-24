@@ -46,12 +46,12 @@ jobs:
               ./libjxl/tools/cjxl $inputFile.FullName $outFilePath -q 90
             }
             $sw.Stop()
-            echo "| $inputFile.Name | (Get-Item $inputFile.FullName).Length/1KB | ${fileNameWithoutExtension}.jxl | (Get-Item $outFilePath).Length/1KB | $($sw.Elapsed.TotalSeconds)s |" >> $resultsFile
+            echo "| $($inputFile.Name) | $([math]::ceiling($inputFile.Length / 1KB))KB | ${fileNameWithoutExtension}.jxl | $([math]::ceiling((Get-Item $outFilePath).Length/1KB))KB | $($sw.Elapsed.TotalSeconds)s |" >> $resultsFile
           }
 
       - name: Upload to workflow results
         uses: actions/upload-artifact@v4
         with:
-          compression-level: 0 # no need to compress because JXL already compress
-          name: jxl_results.zip
+          compression-level: 0 # no need to compress because JXL already compressed
+          name: jxl_results
           path: ./outputs/

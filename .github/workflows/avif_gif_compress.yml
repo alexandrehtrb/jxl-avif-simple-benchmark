@@ -1,0 +1,48 @@
+name: AVIF compression of GIFs
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  avif_gif_compress:
+    runs-on: ubuntu-latest
+    steps:
+    
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          
+      - name: Install FFMPEG
+        shell: pwsh
+        run: |
+          sudo apt update
+          sudo apt install ffmpeg
+      
+      - name: Compress images and measure times
+        shell: pwsh
+        run: |
+          # only input gifs
+          $inputFiles = gci ./inputs/ -File | Where { $_.Name -like "*.gif" }
+          $resultsFile = "./outputs/avif_gif_results.txt"
+          mkdir ./outputs/
+          ni $resultsFile
+          $sw = [System.Diagnostics.Stopwatch]::new()
+          # careful: don't use $input as variable in PowerShell (forbidden name)
+          foreach ($inputFile in $inputFiles)
+          {
+            $fileNameWithoutExtension = $($inputFile.Name.ToLower().Replace(".jpg","").Replace(".png","").Replace(".gif",""))
+            $outFilePath = "./outputs/${fileNameWithoutExtension}.avif"
+            $sw.Restart()
+            ffmpeg -i $inputFile.FullName $outFilePath
+            $sw.Stop()
+            echo "| $($inputFile.Name) | $([math]::ceiling($inputFile.Length / 1KB))KB | ${fileNameWithoutExtension}.avif | $([math]::ceiling((Get-Item $outFilePath).Length/1KB))KB | $($sw.Elapsed.TotalSeconds)s |" >> $resultsFile
+          }
+
+      - name: Upload to workflow results
+        uses: actions/upload-artifact@v4
+        with:
+          compression-level: 0 # no need to compress because AVIF already compressed
+          name: avif_gif_results
+          path: ./outputs/

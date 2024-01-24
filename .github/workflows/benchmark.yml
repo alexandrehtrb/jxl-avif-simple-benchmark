@@ -9,3 +9,9 @@ on:
 jobs:
   jxl_compression:
     uses: ./.github/workflows/jxl_compress.yml
+  
+  avif_static_compression:
+    uses: ./.github/workflows/avif_static_compress.yml
+  
+  avif_gif_compression:
+    uses: ./.github/workflows/avif_gif_compress.yml
