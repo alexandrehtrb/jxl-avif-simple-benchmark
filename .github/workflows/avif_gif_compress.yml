@@ -36,7 +36,9 @@ jobs:
             $fileNameWithoutExtension = $($inputFile.Name.ToLower().Replace(".jpg","").Replace(".png","").Replace(".gif",""))
             $outputFilePath = "./outputs/${fileNameWithoutExtension}.avif"
             $sw.Restart()
-            ffmpeg -i $inputFile.FullName -strict -1 -f yuv4mpegpipe -pix_fmt yuva444p - | avifenc --stdin $outputFilePath
+            # https://codelabs.developers.google.com/codelabs/avif#5
+            ffmpeg -i $inputFile.FullName -pix_fmt yuv420p -f yuv4mpegpipe "${fileNameWithoutExtension}.y4m"
+            avifenc "${fileNameWithoutExtension}.y4m" $outputFilePath
             $sw.Stop()
 
             $inputFileSize = [math]::ceiling($inputFile.Length / 1KB)
