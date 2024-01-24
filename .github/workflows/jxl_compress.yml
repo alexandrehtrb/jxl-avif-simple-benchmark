@@ -1,0 +1,57 @@
+name: JXL compression
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  jxl_compress:
+    runs-on: ubuntu-latest
+    steps:
+    
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          
+      - name: Download libjxl
+        shell: pwsh
+        run: |
+          $url = "https://github.com/libjxl/libjxl/releases/download/v0.9.1/jxl-linux-x86_64-static-v0.9.1.tar.gz"
+          $destinationFile = "libjxl_linux.tar.gz"
+          Invoke-WebRequest -Uri $url -OutFile $destinationFile
+          mkdir libjxl
+          tar xf libjxl_linux.tar.gz -C ./libjxl/
+      
+      - name: Compress images and measure times
+        shell: pwsh
+        run: |
+          $inputFiles = Get-ChildItem -Path '.\inputs\' -File;
+          $resultsFile = "./outputs/jxl_results.txt"
+          mkdir ./outputs/
+          ni $resultsFile
+          $sw = [System.Diagnostics.Stopwatch]::new()
+          # careful: don't use $input as variable in PowerShell (forbidden name)
+          foreach ($inputFile in $inputFiles)
+          {
+            $fileNameWithoutExtension = $($inputFile.Name.ToLower().Replace(".jpg","").Replace(".png","").Replace(".gif",""))
+            $outFilePath = "./outputs/${fileNameWithoutExtension}.jxl"
+            $sw.Restart()
+            if ($inputFile.Name -like "*jpg")
+            {
+              ./libjxl/tools/cjxl $inputFile.FullName $outFilePath -q 90 --lossless_jpeg=0
+            }
+            else
+            {
+              ./libjxl/tools/cjxl $inputFile.FullName $outFilePath -q 90
+            }
+            $sw.Stop()
+            echo "| $inputFile.Name | (Get-Item $inputFile.FullName).Length/1KB | ${fileNameWithoutExtension}.jxl | (Get-Item $outFilePath).Length/1KB | $($sw.Elapsed.TotalSeconds)s |" >> $resultsFile
+          }
+
+      - name: Upload to workflow results
+        uses: actions/upload-artifact@v4
+        with:
+          compression-level: 0 # no need to compress because JXL already compress
+          name: jxl_results.zip
+          path: ./outputs/

@@ -1,0 +1,11 @@
+name: JXL and AVIF benchmark
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+
+jobs:
+  jxl_compression:
+    uses: ./.github/workflows/jxl_compress.yml
