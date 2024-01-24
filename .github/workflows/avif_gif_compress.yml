@@ -19,6 +19,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install ffmpeg
+          sudo apt install libavif
       
       - name: Compress images and measure times
         shell: pwsh
@@ -35,7 +36,7 @@ jobs:
             $fileNameWithoutExtension = $($inputFile.Name.ToLower().Replace(".jpg","").Replace(".png","").Replace(".gif",""))
             $outFilePath = "./outputs/${fileNameWithoutExtension}.avif"
             $sw.Restart()
-            ffmpeg -i $inputFile.FullName $outFilePath
+            ffmpeg -i $inputFile.FullName -strict -1 -f yuv4mpegpipe -pix_fmt yuva444p - | avifenc --stdin $outFilePath
             $sw.Stop()
             echo "| $($inputFile.Name) | $([math]::ceiling($inputFile.Length / 1KB))KB | ${fileNameWithoutExtension}.avif | $([math]::ceiling((Get-Item $outFilePath).Length/1KB))KB | $($sw.Elapsed.TotalSeconds)s |" >> $resultsFile
           }
