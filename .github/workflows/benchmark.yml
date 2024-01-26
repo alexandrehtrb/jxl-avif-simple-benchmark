@@ -32,13 +32,13 @@ jobs:
     uses: ./.github/workflows/jxl_compress.yml
     with:
       libjxl_version: ${{ inputs.libjxl_version || '0.9.1' }}
-      quality_factor: ${{ inputs.libjxl_quality_factor || 90 }}
+      quality_factor: ${{ inputs.libjxl_quality_factor || '90' }}
   
   avif_static_compression:
     uses: ./.github/workflows/avif_static_compress.yml
     with:
       cavif_version: ${{ inputs.cavif_version || '1.5.5' }}
-      quality_factor: ${{ inputs.cavif_quality_factor || 90 }}
+      quality_factor: ${{ inputs.cavif_quality_factor || '90' }}
   
   avif_gif_compression:
     uses: ./.github/workflows/avif_gif_compress.yml
@@ -48,6 +48,6 @@ jobs:
     uses: ./.github/workflows/make_results_table.yml
     with:
       libjxl_version: ${{ inputs.libjxl_version || '0.9.1' }}
-      libjxl_quality_factor: ${{ inputs.libjxl_quality_factor || 90 }}
+      libjxl_quality_factor: ${{ inputs.libjxl_quality_factor || '90' }}
       cavif_version: ${{ inputs.cavif_version || '1.5.5' }}
-      cavif_quality_factor: ${{ inputs.cavif_quality_factor || 90 }}
+      cavif_quality_factor: ${{ inputs.cavif_quality_factor || '90' }}
