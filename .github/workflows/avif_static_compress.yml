@@ -1,8 +1,14 @@
 name: AVIF compression of static images
 
 on:
-  workflow_dispatch:
   workflow_call:
+    inputs:
+      cavif_version:
+        required: true
+        type: string
+      quality_factor:
+        required: true
+        type: number
 
 jobs:
   avif_static_compress:
@@ -17,11 +23,13 @@ jobs:
       - name: Download cavif-rs
         shell: pwsh
         run: |
-          $url = "https://github.com/kornelski/cavif-rs/releases/download/v1.5.5/cavif-1.5.5.zip"
+          $url = "https://github.com/kornelski/cavif-rs/releases/download/v${env:CAVIF_VERSION}/cavif-${env:CAVIF_VERSION}.zip"
           $destinationFile = "cavif.zip"
           Invoke-WebRequest -Uri $url -OutFile $destinationFile
           mkdir libcavif
           unzip cavif.zip -d ./libcavif/
+        env:
+          CAVIF_VERSION: ${{ inputs.cavif_version }}
       
       - name: Compress images and measure times
         shell: pwsh
@@ -36,13 +44,15 @@ jobs:
             $fileNameWithoutExtension = $($inputFile.Name.ToLower().Replace(".jpg","").Replace(".png","").Replace(".gif",""))
             $outputFilePath = "./outputs/${fileNameWithoutExtension}.avif"
             $sw.Restart()
-            ./libcavif/linux-generic/cavif $inputFile.FullName -o $outputFilePath -Q 90 -f
+            ./libcavif/linux-generic/cavif $inputFile.FullName -o $outputFilePath -Q $env:QUALITY_FACTOR -f
             $sw.Stop()
             
             $elapsedTimeInSeconds = [math]::ceiling($sw.ElapsedMilliseconds)
             # changing the name of output file to hold elapsed milliseconds
             Rename-Item $outputFilePath "${fileNameWithoutExtension}.${elapsedTimeInSeconds}ms.avif"
           }
+        env:
+          QUALITY_FACTOR: ${{ inputs.quality_factor }}
 
       - name: Upload to workflow results
         uses: actions/upload-artifact@v4

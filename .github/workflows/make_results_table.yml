@@ -2,6 +2,19 @@ name: Make benchmark results table
 
 on:
   workflow_call:
+    inputs:
+      libjxl_version:
+        required: true
+        type: string
+      libjxl_quality_factor:
+        required: true
+        type: number
+      cavif_version:
+        required: true
+        type: string
+      cavif_quality_factor:
+        required: true
+        type: number
 
 jobs:
   make_results_table:
@@ -25,6 +38,11 @@ jobs:
           $inputFiles = gci ./inputs/ -File          
           # careful: don't use $input as variable in PowerShell (forbidden name)
           ni results_table.txt
+          echo "libjxl version: ${env:LIBJXL_VERSION}" >> results_table.txt
+          echo "libjxl quality factor: ${env:LIBJXL_QUALITY_FACTOR}" >> results_table.txt
+          echo "cavif-rs version: ${env:CAVIF_VERSION}" >> results_table.txt
+          echo "cavif-rs quality factor: ${env:CAVIF_QUALITY_FACTOR}" >> results_table.txt
+          echo "" >> results_table.txt
           echo "| Input | Original size | JXL compression ratio | JXL processing time | AVIF compression ratio | AVIF processing time |" >> results_table.txt
           echo "|-------|---------------|-----------------------|---------------------|------------------------|----------------------|" >> results_table.txt
           foreach ($inputFile in $inputFiles)
@@ -45,6 +63,11 @@ jobs:
             
             echo "| $($inputFile.Name) | $($inputFileSize)KB | $($jxlCompressionRatio)% | $($jxlProcessingTime)s | $($avifCompressionRatio)% | $($avifProcessingTime)s |" >> results_table.txt
           }
+        env:
+          LIBJXL_VERSION: ${{ inputs.libjxl_version }}
+          LIBJXL_QUALITY_FACTOR: ${{ inputs.libjxl_quality_factor }}
+          CAVIF_VERSION: ${{ inputs.cavif_version }}
+          CAVIF_QUALITY_FACTOR: ${{ inputs.cavif_quality_factor }}
 
       - name: Upload to workflow results
         uses: actions/upload-artifact@v4

@@ -2,16 +2,43 @@ name: JXL and AVIF benchmark
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - master
+    inputs:
+      libjxl_version:
+        description: 'libjxl release version'
+        required: true
+        default: '0.9.1'
+        type: string
+      libjxl_quality_factor:
+        description: 'JXL quality factor (100 is lossless)'
+        required: true
+        default: 90
+        type: number
+      cavif_version:
+        description: 'cavif-rs release version'
+        required: true
+        default: '1.5.5'
+        type: string
+      cavif_quality_factor:
+        description: 'AVIF quality factor (100 is not lossless, don't use it)'
+        required: true
+        default: 90
+        type: number
+  #push:
+  #  branches:
+  #    - master
 
 jobs:
   jxl_compression:
     uses: ./.github/workflows/jxl_compress.yml
+    with:
+      libjxl_version: ${{ inputs.libjxl_version }}
+      quality_factor: ${{ inputs.libjxl_quality_factor }}
   
   avif_static_compression:
     uses: ./.github/workflows/avif_static_compress.yml
+    with:
+      cavif_version: ${{ inputs.cavif_version }}
+      quality_factor: ${{ inputs.cavif_quality_factor }}
   
   avif_gif_compression:
     uses: ./.github/workflows/avif_gif_compress.yml
@@ -19,3 +46,8 @@ jobs:
   make_results_table:
     needs: [jxl_compression, avif_static_compression, avif_gif_compression]
     uses: ./.github/workflows/make_results_table.yml
+    with:
+      libjxl_version: ${{ inputs.libjxl_version }}
+      libjxl_quality_factor: ${{ inputs.libjxl_quality_factor }}
+      cavif_version: ${{ inputs.cavif_version }}
+      cavif_quality_factor: ${{ inputs.cavif_quality_factor }}

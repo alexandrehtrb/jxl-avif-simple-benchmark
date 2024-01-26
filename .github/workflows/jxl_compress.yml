@@ -1,8 +1,14 @@
 name: JXL compression
 
 on:
-  workflow_dispatch:
   workflow_call:
+    inputs:
+      libjxl_version:
+        required: true
+        type: string
+      quality_factor:
+        required: true
+        type: number
 
 jobs:
   jxl_compress:
@@ -17,11 +23,13 @@ jobs:
       - name: Download libjxl
         shell: pwsh
         run: |
-          $url = "https://github.com/libjxl/libjxl/releases/download/v0.9.1/jxl-linux-x86_64-static-v0.9.1.tar.gz"
+          $url = "https://github.com/libjxl/libjxl/releases/download/v${env:LIBJXL_VERSION}/jxl-linux-x86_64-static-v${env:LIBJXL_VERSION}.tar.gz"
           $destinationFile = "libjxl_linux.tar.gz"
           Invoke-WebRequest -Uri $url -OutFile $destinationFile
           mkdir libjxl
           tar xf libjxl_linux.tar.gz -C ./libjxl/
+        env:
+          LIBJXL_VERSION: ${{ inputs.libjxl_version }}
       
       - name: Compress images and measure times
         shell: pwsh
@@ -37,11 +45,18 @@ jobs:
             $sw.Restart()
             if ($inputFile.Name -like "*jpg")
             {
-              ./libjxl/tools/cjxl $inputFile.FullName $outputFilePath -q 90 --lossless_jpeg=0
+              if ($env:QUALITY_FACTOR -eq "100")
+              {
+                ./libjxl/tools/cjxl $inputFile.FullName $outputFilePath --lossless_jpeg=1
+              }
+              else
+              {
+                ./libjxl/tools/cjxl $inputFile.FullName $outputFilePath -q $env:QUALITY_FACTOR --lossless_jpeg=0
+              }
             }
             else
             {
-              ./libjxl/tools/cjxl $inputFile.FullName $outputFilePath -q 90
+              ./libjxl/tools/cjxl $inputFile.FullName $outputFilePath -q $env:QUALITY_FACTOR
             }
             $sw.Stop()
 
@@ -49,6 +64,8 @@ jobs:
             # changing the name of output file to hold elapsed milliseconds
             Rename-Item $outputFilePath "${fileNameWithoutExtension}.${elapsedTimeInSeconds}ms.jxl"
           }
+        env:
+          QUALITY_FACTOR: ${{ inputs.quality_factor }}
 
       - name: Upload to workflow results
         uses: actions/upload-artifact@v4
