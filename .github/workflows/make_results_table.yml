@@ -1,0 +1,54 @@
+name: Make benchmark results table
+
+on:
+  workflow_call:
+
+jobs:
+  make_results_table:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+    
+      - name: Download generated images
+        uses: actions/download-artifact@v4
+        with:
+          path: ./outputs/
+          merge-multiple: true
+      
+      - name: Make table
+        shell: pwsh
+        run: |
+          $inputFiles = gci ./inputs/ -File          
+          # careful: don't use $input as variable in PowerShell (forbidden name)
+          ni results_table.txt
+          echo "| Input | Original size | JXL compression ratio | JXL processing time | AVIF compression ratio | AVIF processing time |" >> results_table.txt
+          echo "|-------|---------------|-----------------------|---------------------|------------------------|----------------------|" >> results_table.txt
+          foreach ($inputFile in $inputFiles)
+          {
+            $fileNameWithoutExtension = $($inputFile.Name.ToLower().Replace(".jpg","").Replace(".png","").Replace(".gif",""))
+            $outputJxlFileName = (gci ./outputs/ -File | Where { ($_.Name -like "${fileNameWithoutExtension}.*") -and ($_.Name -like "*.jxl")})[0].Name
+            $outputAvifFileName = (gci ./outputs/ -File | Where { ($_.Name -like "${fileNameWithoutExtension}.*") -and ($_.Name -like "*.avif")})[0].Name
+            
+            $inputFileSize = [math]::ceiling($inputFile.Length / 1KB)
+            $jxlFileSize = [math]::ceiling((Get-Item "./outputs/${outputJxlFileName}").Length / 1KB)
+            $avifFileSize = [math]::ceiling((Get-Item "./outputs/${outputAvifFileName}").Length / 1KB)
+            
+            $jxlCompressionRatio = [math]::floor(($jxlFileSize / $inputFileSize) * 100) - 100
+            $avifCompressionRatio = [math]::floor(($avifFileSize / $inputFileSize) * 100) - 100
+            
+            $jxlProcessingTime = [convert]::ToInt64((($outputJxlFileName -split "\.")[1].TrimEnd("ms"))) / 1000
+            $avifProcessingTime = [convert]::ToInt64((($outputAvifFileName -split "\.")[1].TrimEnd("ms"))) / 1000
+            
+            echo "| $($inputFile.Name) | $($inputFileSize)KB | $($jxlCompressionRatio)% | $($jxlProcessingTime)s | $($avifCompressionRatio)% | $($avifProcessingTime)s |" >> results_table.txt
+          }
+
+      - name: Upload to workflow results
+        uses: actions/upload-artifact@v4
+        with:
+          compression-level: 0 # no need to compress, too small
+          name: results_table.txt
+          path: ./results_table.txt

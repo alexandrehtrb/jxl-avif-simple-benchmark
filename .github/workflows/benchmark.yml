@@ -15,3 +15,7 @@ jobs:
   
   avif_gif_compression:
     uses: ./.github/workflows/avif_gif_compress.yml
+
+  make_results_table:
+    needs: [jxl_compression, avif_static_compression, avif_gif_compression]
+    uses: ./.github/workflows/make_results_table.yml

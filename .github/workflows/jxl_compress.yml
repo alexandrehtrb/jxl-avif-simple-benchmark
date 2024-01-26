@@ -10,9 +10,9 @@ jobs:
     steps:
     
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
           
       - name: Download libjxl
         shell: pwsh
@@ -27,9 +27,7 @@ jobs:
         shell: pwsh
         run: |
           $inputFiles = Get-ChildItem -Path '.\inputs\' -File;
-          $resultsFile = "./outputs/jxl_results.txt"
           mkdir ./outputs/
-          ni $resultsFile
           $sw = [System.Diagnostics.Stopwatch]::new()
           # careful: don't use $input as variable in PowerShell (forbidden name)
           foreach ($inputFile in $inputFiles)
@@ -46,12 +44,10 @@ jobs:
               ./libjxl/tools/cjxl $inputFile.FullName $outputFilePath -q 90
             }
             $sw.Stop()
-            
-            $inputFileSize = [math]::ceiling($inputFile.Length / 1KB)
-            $outputFileSize = [math]::ceiling((Get-Item $outputFilePath).Length / 1KB)
-            $compressionRatio = [math]::floor(($outputFileSize / $inputFileSize) * 100) - 100
-            $elapsedTimeInSeconds = [math]::ceiling($sw.Elapsed.TotalSeconds)
-            echo "| $($inputFile.Name) | $($inputFileSize)KB | $($outputFileSize)KB | $($compressionRatio)% | $($elapsedTimeInSeconds)s |" >> $resultsFile
+
+            $elapsedTimeInSeconds = [math]::ceiling($sw.ElapsedMilliseconds)
+            # changing the name of output file to hold elapsed milliseconds
+            Rename-Item $outputFilePath "${fileNameWithoutExtension}.${elapsedTimeInSeconds}ms.jxl"
           }
 
       - name: Upload to workflow results

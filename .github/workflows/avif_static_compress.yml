@@ -10,9 +10,9 @@ jobs:
     steps:
     
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
           
       - name: Download cavif-rs
         shell: pwsh
@@ -28,9 +28,7 @@ jobs:
         run: |
           # all input images except gifs, because cavif-rs can't handle gifs yet
           $inputFiles = gci ./inputs/ -File | Where { $_.Name -notlike "*.gif" }
-          $resultsFile = "./outputs/avif_static_results.txt"
           mkdir ./outputs/
-          ni $resultsFile
           $sw = [System.Diagnostics.Stopwatch]::new()
           # careful: don't use $input as variable in PowerShell (forbidden name)
           foreach ($inputFile in $inputFiles)
@@ -41,11 +39,9 @@ jobs:
             ./libcavif/linux-generic/cavif $inputFile.FullName -o $outputFilePath -Q 90 -f
             $sw.Stop()
             
-            $inputFileSize = [math]::ceiling($inputFile.Length / 1KB)
-            $outputFileSize = [math]::ceiling((Get-Item $outputFilePath).Length / 1KB)
-            $compressionRatio = [math]::floor(($outputFileSize / $inputFileSize) * 100) - 100
-            $elapsedTimeInSeconds = [math]::ceiling($sw.Elapsed.TotalSeconds)
-            echo "| $($inputFile.Name) | $($inputFileSize)KB | $($outputFileSize)KB | $($compressionRatio)% | $($elapsedTimeInSeconds)s |" >> $resultsFile
+            $elapsedTimeInSeconds = [math]::ceiling($sw.ElapsedMilliseconds)
+            # changing the name of output file to hold elapsed milliseconds
+            Rename-Item $outputFilePath "${fileNameWithoutExtension}.${elapsedTimeInSeconds}ms.avif"
           }
 
       - name: Upload to workflow results
