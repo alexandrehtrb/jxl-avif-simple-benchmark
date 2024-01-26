@@ -23,22 +23,22 @@ on:
         required: true
         default: 90
         type: number
-  #push:
-  #  branches:
-  #    - master
+  push:
+    branches:
+      - master
 
 jobs:
   jxl_compression:
     uses: ./.github/workflows/jxl_compress.yml
     with:
-      libjxl_version: ${{ inputs.libjxl_version }}
-      quality_factor: ${{ inputs.libjxl_quality_factor }}
+      libjxl_version: ${{ inputs.libjxl_version || '0.9.1' }}
+      quality_factor: ${{ inputs.libjxl_quality_factor || 90 }}
   
   avif_static_compression:
     uses: ./.github/workflows/avif_static_compress.yml
     with:
-      cavif_version: ${{ inputs.cavif_version }}
-      quality_factor: ${{ inputs.cavif_quality_factor }}
+      cavif_version: ${{ inputs.cavif_version || '1.5.5' }}
+      quality_factor: ${{ inputs.cavif_quality_factor || 90 }}
   
   avif_gif_compression:
     uses: ./.github/workflows/avif_gif_compress.yml
@@ -47,7 +47,7 @@ jobs:
     needs: [jxl_compression, avif_static_compression, avif_gif_compression]
     uses: ./.github/workflows/make_results_table.yml
     with:
-      libjxl_version: ${{ inputs.libjxl_version }}
-      libjxl_quality_factor: ${{ inputs.libjxl_quality_factor }}
-      cavif_version: ${{ inputs.cavif_version }}
-      cavif_quality_factor: ${{ inputs.cavif_quality_factor }}
+      libjxl_version: ${{ inputs.libjxl_version || '0.9.1' }}
+      libjxl_quality_factor: ${{ inputs.libjxl_quality_factor || 90 }}
+      cavif_version: ${{ inputs.cavif_version || '1.5.5' }}
+      cavif_quality_factor: ${{ inputs.cavif_quality_factor || 90 }}
