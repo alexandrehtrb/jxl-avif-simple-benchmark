@@ -19,7 +19,7 @@ on:
         default: '1.5.5'
         type: string
       cavif_quality_factor:
-        description: 'AVIF quality factor (100 is not lossless, don't use it)'
+        description: 'AVIF quality factor (100 is not lossless, dont use it)'
         required: true
         default: 90
         type: number
