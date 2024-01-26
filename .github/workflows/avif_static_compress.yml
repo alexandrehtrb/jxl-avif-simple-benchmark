@@ -8,7 +8,7 @@ on:
         type: string
       quality_factor:
         required: true
-        type: number
+        type: string
 
 jobs:
   avif_static_compress:
