@@ -8,13 +8,13 @@ on:
         type: string
       libjxl_quality_factor:
         required: true
-        type: number
+        type: string
       cavif_version:
         required: true
         type: string
       cavif_quality_factor:
         required: true
-        type: number
+        type: string
 
 jobs:
   make_results_table:
