@@ -10,8 +10,6 @@ Read more about qualitative image comparison [here](https://kornel.ski/en/fairco
 
 Clone this repo and run using GitHub Actions. Every push to master starts the benchmarking compression.
 
-The numbers for comparison can be obtained inside the .zip files produced.
-
 ## Input images sources
 
 I don't have the sources of all the input images, some are just from my collection.
@@ -24,10 +22,7 @@ I don't have the sources of all the input images, some are just from my collecti
 
 ### JXL q=90, AVIF q=90
 
-libjxl version: 0.9.1
-libjxl quality factor: 90
-cavif-rs version: 1.5.5
-cavif-rs quality factor: 90
+libjxl version: 0.9.1, cavif-rs version: 1.5.5
 
 | Input | Original size | JXL compression ratio | JXL processing time | AVIF compression ratio | AVIF processing time |
 |-------|---------------|-----------------------|---------------------|------------------------|----------------------|
@@ -46,10 +41,7 @@ cavif-rs quality factor: 90
 
 ### JXL q=80, AVIF q=80
 
-libjxl version: 0.9.1
-libjxl quality factor: 80
-cavif-rs version: 1.5.5
-cavif-rs quality factor: 80
+libjxl version: 0.9.1, cavif-rs version: 1.5.5
 
 | Input | Original size | JXL compression ratio | JXL processing time | AVIF compression ratio | AVIF processing time |
 |-------|---------------|-----------------------|---------------------|------------------------|----------------------|
@@ -65,4 +57,3 @@ cavif-rs quality factor: 80
 | sky_plants.jpg | 5156KB | -61% | 1.667s | -66% | 35.361s |
 | space.jpg | 9048KB | -86% | 1.526s | -86% | 21.839s |
 | subway-escalators.jpg | 10982KB | -63% | 7.762s | -51% | 74.183s |
-
