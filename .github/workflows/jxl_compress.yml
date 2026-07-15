@@ -6,9 +6,9 @@ on:
       libjxl_version:
         required: true
         type: string
-      #quality_factor:
-      #  required: true
-      #  type: string
+      quality_factor:
+        required: true
+        type: string
 
 jobs:
   jxl_compress:
@@ -44,15 +44,29 @@ jobs:
             $fileNameWithoutExtension = $($inputFile.Name.ToLower().Replace(".jpg","").Replace(".png","").Replace(".gif",""))
             $outputFilePath = "./outputs/${fileNameWithoutExtension}.jxl"
             $sw.Restart()
-            # not using quality factor anymore (-q $env:QUALITY_FACTOR on both avifenc and cjxl)
-            ./libjxl/tools/cjxl $inputFile.FullName $outputFilePath
+            if ($inputFile.Name -like "*jpg")
+            {
+              if ($env:QUALITY_FACTOR -eq "100")
+              {
+                ./libjxl/tools/cjxl $inputFile.FullName $outputFilePath --lossless_jpeg=1
+              }
+              else
+              {
+                ./libjxl/tools/cjxl $inputFile.FullName $outputFilePath -q $env:QUALITY_FACTOR --lossless_jpeg=0
+              }
+            }
+            else
+            {
+              ./libjxl/tools/cjxl $inputFile.FullName $outputFilePath -q $env:QUALITY_FACTOR
+            }
             $sw.Stop()
+
             $elapsedTimeInSeconds = [math]::ceiling($sw.ElapsedMilliseconds)
             # changing the name of output file to hold elapsed milliseconds
             Rename-Item $outputFilePath "${fileNameWithoutExtension}.${elapsedTimeInSeconds}ms.jxl"
           }
-        #env:
-        #  QUALITY_FACTOR: ${{ inputs.quality_factor }}
+        env:
+          QUALITY_FACTOR: ${{ inputs.quality_factor }}
 
       - name: Upload to workflow results
         uses: actions/upload-artifact@v7

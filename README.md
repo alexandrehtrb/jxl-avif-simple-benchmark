@@ -26,8 +26,6 @@ I don't have the sources of all the input images, some are just from my collecti
 
 ## Some results
 
-Quality factors (`-q`) are not used. The conversions run on the default configurations of each tool.
-
 ### JXL q=90, AVIF q=90
 
 libjxl version: 0.9.1, cavif-rs version: 1.5.5

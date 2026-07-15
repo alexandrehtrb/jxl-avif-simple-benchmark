@@ -6,9 +6,9 @@ on:
       libavif_version:
         required: true
         type: string
-      #quality_factor:
-      #  required: true
-      #  type: string
+      quality_factor:
+        required: true
+        type: string
 
 jobs:
   avif_compress:
@@ -47,20 +47,19 @@ jobs:
             $isGif = $inputFile.Name.ToLower() -like "*.gif"
             $sw.Restart()
             # https://codelabs.developers.google.com/codelabs/avif#5
-            # not using quality factor anymore (-q $env:QUALITY_FACTOR on both avifenc and cjxl)
             if ($isGif) {
               ffmpeg -i $inputFile.FullName -pix_fmt yuv420p -f yuv4mpegpipe "${fileNameWithoutExtension}.y4m"
-              ./libavif/avifenc "${fileNameWithoutExtension}.y4m" $outputFilePath            
+              ./libavif/avifenc -q $env:QUALITY_FACTOR "${fileNameWithoutExtension}.y4m" $outputFilePath            
             } else {
-              ./libavif/avifenc $inputFile $outputFilePath
+              ./libavif/avifenc -q $env:QUALITY_FACTOR $inputFile $outputFilePath            
             }
             $sw.Stop()
             $elapsedTimeInSeconds = [math]::ceiling($sw.ElapsedMilliseconds)
             # changing the name of output file to hold elapsed milliseconds
             Rename-Item $outputFilePath "${fileNameWithoutExtension}.${elapsedTimeInSeconds}ms.avif"
           }
-        #env:
-        #  QUALITY_FACTOR: ${{ inputs.quality_factor }}
+        env:
+          QUALITY_FACTOR: ${{ inputs.quality_factor }}
 
       - name: Upload to workflow results
         uses: actions/upload-artifact@v7
