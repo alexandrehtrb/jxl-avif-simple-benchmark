@@ -26,7 +26,7 @@ jobs:
           sudo apt update
           sudo apt install ffmpeg
           sudo apt install unzip
-          curl -O "https://github.com/AOMediaCodec/libavif/releases/download/v${env:LIBAVIF_VERSION}/linux-artifacts.zip"
+          curl -L -O "https://github.com/AOMediaCodec/libavif/releases/download/v${env:LIBAVIF_VERSION}/linux-artifacts.zip"
           gci linux-artifacts.zip
           unzip linux-artifacts.zip -d ./libavif/
           ls ./libavif/

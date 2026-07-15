@@ -24,7 +24,7 @@ jobs:
         shell: pwsh
         run: |
           sudo apt install lzip
-          curl -O "https://github.com/libjxl/libjxl/releases/download/v${env:LIBJXL_VERSION}/jxl-linux-x86_64-static.tar.lz"
+          curl -L -O "https://github.com/libjxl/libjxl/releases/download/v${env:LIBJXL_VERSION}/jxl-linux-x86_64-static.tar.lz"
           gci jxl-linux-x86_64-static.tar.lz
           mkdir libjxl
           tar --lzip -xvf jxl-linux-x86_64-static.tar.lz -C ./libjxl/
