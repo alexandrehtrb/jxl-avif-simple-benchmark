@@ -10,6 +10,12 @@ Read more about qualitative image comparison [here](https://kornel.ski/en/fairco
 
 Clone this repo and run using GitHub Actions. Every push to master starts the benchmarking compression.
 
+## Tools used
+
+- [libjxl](https://github.com/libjxl/libjxl)
+- [libavif](https://github.com/aomediacodec/libavif)
+- [ffmpeg](https://ffmpeg.org) (for animated GIFs)
+
 ## Input images sources
 
 I don't have the sources of all the input images, some are just from my collection.

@@ -16,18 +16,18 @@ jobs:
     steps:
     
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 1
           
       - name: Download libjxl
         shell: pwsh
         run: |
-          $url = "https://github.com/libjxl/libjxl/releases/download/v${env:LIBJXL_VERSION}/jxl-linux-x86_64-static-v${env:LIBJXL_VERSION}.tar.gz"
-          $destinationFile = "libjxl_linux.tar.gz"
+          $url = "https://github.com/libjxl/libjxl/releases/download/v${env:LIBJXL_VERSION}/jxl-linux-x86_64-static.tar.lz"
+          $destinationFile = "libjxl_linux.tar.lz"
           Invoke-WebRequest -Uri $url -OutFile $destinationFile
           mkdir libjxl
-          tar xf libjxl_linux.tar.gz -C ./libjxl/
+          tar xf libjxl_linux.tar.lz -C ./libjxl/
         env:
           LIBJXL_VERSION: ${{ inputs.libjxl_version }}
       
@@ -68,7 +68,7 @@ jobs:
           QUALITY_FACTOR: ${{ inputs.quality_factor }}
 
       - name: Upload to workflow results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           compression-level: 0 # no need to compress because JXL already compressed
           name: jxl_results

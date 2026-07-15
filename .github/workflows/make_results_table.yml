@@ -9,10 +9,10 @@ on:
       libjxl_quality_factor:
         required: true
         type: string
-      cavif_version:
+      libavif_version:
         required: true
         type: string
-      cavif_quality_factor:
+      libavif_quality_factor:
         required: true
         type: string
 
@@ -22,12 +22,12 @@ jobs:
     steps:
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 1
     
       - name: Download generated images
-        uses: actions/download-artifact@v4.1.7
+        uses: actions/download-artifact@v8.0.1
         with:
           path: ./outputs/
           merge-multiple: true
@@ -40,11 +40,11 @@ jobs:
           ni results_table.txt
           echo "libjxl version: ${env:LIBJXL_VERSION}" >> results_table.txt
           echo "libjxl quality factor: ${env:LIBJXL_QUALITY_FACTOR}" >> results_table.txt
-          echo "cavif-rs version: ${env:CAVIF_VERSION}" >> results_table.txt
-          echo "cavif-rs quality factor: ${env:CAVIF_QUALITY_FACTOR}" >> results_table.txt
+          echo "libavif-bin version: ${env:LIBAVIF_VERSION}" >> results_table.txt
+          echo "libavif-bin quality factor: ${env:LIBAVIF_QUALITY_FACTOR}" >> results_table.txt
           echo "" >> results_table.txt
           echo "| Input | Original size | JXL compression ratio | JXL processing time | AVIF compression ratio | AVIF processing time |" >> results_table.txt
-          echo "|-------|---------------|-----------------------|---------------------|------------------------|----------------------|" >> results_table.txt
+          echo "|:-:|:-:|:-:|:-:|:-:|:-:|" >> results_table.txt
           foreach ($inputFile in $inputFiles)
           {
             $fileNameWithoutExtension = $($inputFile.Name.ToLower().Replace(".jpg","").Replace(".png","").Replace(".gif",""))
@@ -56,21 +56,23 @@ jobs:
             $avifFileSize = [math]::ceiling((Get-Item "./outputs/${outputAvifFileName}").Length / 1KB)
             
             $jxlCompressionRatio = [math]::floor(($jxlFileSize / $inputFileSize) * 100) - 100
+            $jxlCompressionRatioStr = if ($jxlCompressionRatio -gt 0) { "+${jxlCompressionRatio}" } else { "${jxlCompressionRatio}" }
             $avifCompressionRatio = [math]::floor(($avifFileSize / $inputFileSize) * 100) - 100
+            $avifCompressionRatioStr = if ($avifCompressionRatio -gt 0) { "+${avifCompressionRatio}" } else { "${avifCompressionRatio}" }
             
             $jxlProcessingTime = [convert]::ToInt64((($outputJxlFileName -split "\.")[1].TrimEnd("ms"))) / 1000
             $avifProcessingTime = [convert]::ToInt64((($outputAvifFileName -split "\.")[1].TrimEnd("ms"))) / 1000
             
-            echo "| $($inputFile.Name) | $($inputFileSize)KB | $($jxlCompressionRatio)% | $($jxlProcessingTime)s | $($avifCompressionRatio)% | $($avifProcessingTime)s |" >> results_table.txt
+            echo "| $($inputFile.Name) | $($inputFileSize)KB | $($jxlCompressionRatioStr)% | $($jxlProcessingTime)s | $($avifCompressionRatioStr)% | $($avifProcessingTime)s |" >> results_table.txt
           }
         env:
           LIBJXL_VERSION: ${{ inputs.libjxl_version }}
           LIBJXL_QUALITY_FACTOR: ${{ inputs.libjxl_quality_factor }}
-          CAVIF_VERSION: ${{ inputs.cavif_version }}
-          CAVIF_QUALITY_FACTOR: ${{ inputs.cavif_quality_factor }}
+          LIBAVIF_VERSION: ${{ inputs.libavif_version }}
+          LIBAVIF_QUALITY_FACTOR: ${{ inputs.libavif_quality_factor }}
 
       - name: Upload to workflow results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           compression-level: 0 # no need to compress, too small
           name: results_table.txt
