@@ -31,20 +31,20 @@ jobs:
   jxl_compression:
     uses: ./.github/workflows/jxl_compress.yml
     with:
-      libjxl_version: ${{ inputs.libjxl_version }}
-      quality_factor: ${{ inputs.libjxl_quality_factor }}
+      libjxl_version: ${{ inputs.libjxl_version || '0.12.0' }}
+      quality_factor: ${{ inputs.libjxl_quality_factor || '90' }}
   
   avif_compression:
     uses: ./.github/workflows/avif_compress.yml
     with:
-      libavif_version: ${{ inputs.libavif_version }}
-      quality_factor: ${{ inputs.libavif_quality_factor }}
+      libavif_version: ${{ inputs.libavif_version || '1.4.2' }}
+      quality_factor: ${{ inputs.libavif_quality_factor || '90' }}
 
   make_results_table:
     needs: [jxl_compression, avif_compression]
     uses: ./.github/workflows/make_results_table.yml
     with:
-      libjxl_version: ${{ inputs.libjxl_version }}
-      libjxl_quality_factor: ${{ inputs.libjxl_quality_factor }}
-      libavif_version: ${{ inputs.libavif_version }}
-      libavif_quality_factor: ${{ inputs.libavif_quality_factor }}
+      libjxl_version: ${{ inputs.libjxl_version || '0.12.0' }}
+      libjxl_quality_factor: ${{ inputs.libjxl_quality_factor || '90' }}
+      libavif_version: ${{ inputs.libavif_version || '1.4.2' }}
+      libavif_quality_factor: ${{ inputs.libavif_quality_factor || '90' }}
