@@ -21,12 +21,13 @@ jobs:
           fetch-depth: 1
           
       - name: Install ffmpeg and libavif
-        shell: bash
+        shell: pwsh
         run: |
           sudo apt update
           sudo apt install ffmpeg
           sudo apt install unzip
-          curl -O https://github.com/AOMediaCodec/libavif/releases/download/v$LIBAVIF_VERSION/linux-artifacts.zip
+          curl -O "https://github.com/AOMediaCodec/libavif/releases/download/v${env:LIBAVIF_VERSION}/linux-artifacts.zip"
+          gci linux-artifacts.zip
           unzip linux-artifacts.zip -d ./libavif/
           ls ./libavif/
         env:
