@@ -23,6 +23,9 @@ on:
         required: true
         default: 90
         type: number
+  push:
+    branches:
+      - master
 
 jobs:
   jxl_compression:
