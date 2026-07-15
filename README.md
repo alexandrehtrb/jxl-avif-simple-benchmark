@@ -26,40 +26,38 @@ I don't have the sources of all the input images, some are just from my collecti
 
 ## Some results
 
-### JXL q=90, AVIF q=90
-
-libjxl version: 0.9.1, cavif-rs version: 1.5.5
+### libjxl v0.12.0 q=90, libavif v1.4.2 q=90
 
 | Input | Original size | JXL compression ratio | JXL processing time | AVIF compression ratio | AVIF processing time |
-|-------|---------------|-----------------------|---------------------|------------------------|----------------------|
-| bar.jpg | 302KB | -51% | 0.139s | -55% | 2.396s |
-| boxes.jpg | 36KB | -20% | 0.063s | -48% | 0.712s |
-| central-asia-elevation-map.png | 2104KB | -79% | 0.84s | -87% | 8.831s |
-| curtains.gif | 1092KB | -62% | 0.983s | -98% | 5.651s |
-| eclipse.gif | 130KB | 389% | 1.694s | -70% | 2.911s |
-| emilia-clarke.gif | 3174KB | -20% | 2.32s | -98% | 12.32s |
-| mclaren.png | 6223KB | -94% | 1.003s | -97% | 10.784s |
-| misinformation.jpg | 33KB | -10% | 0.065s | -34% | 0.808s |
-| organic_chemistry.png | 274KB | 208% | 3.585s | 36% | 30.855s |
-| sky_plants.jpg | 5156KB | -39% | 1.758s | -44% | 38.25s |
-| space.jpg | 9048KB | -79% | 1.598s | -76% | 26.657s |
-| subway-escalators.jpg | 10982KB | -34% | 8.619s | -25% | 81.62s |
+|:-:|:-:|:-:|:-:|:-:|:-:|
+| bar.jpg | 302KB | -50% | 0.139s | -34% | 0.254s |
+| boxes.jpg | 36KB | -25% | 0.061s | -28% | 0.166s |
+| central-asia-elevation-map.png | 2104KB | -79% | 0.549s | -78% | 1.708s |
+| curtains.gif | 1092KB | -66% | 0.756s | -82% | 6.736s |
+| eclipse.gif | 130KB | +309% | 1.891s | -52% | 1.721s |
+| emilia-clarke.gif | 3174KB | -57% | 2.432s | -70% | 17.138s |
+| mclaren.png | 6223KB | -94% | 0.894s | -90% | 0.946s |
+| misinformation.jpg | 33KB | -16% | 0.076s | -10% | 0.213s |
+| organic_chemistry.png | 274KB | +254% | 2.378s | +38% | 2.926s |
+| sky_plants.jpg | 5156KB | -37% | 2.01s | -22% | 3.559s |
+| space.jpg | 9048KB | -77% | 1.439s | -64% | 2.933s |
+| subway-escalators.jpg | 10982KB | -31% | 7.607s | -2% | 10.905s |
+| waldo.jpg | 6117KB | -33% | 2.793s | -25% | 4.063s |
 
-### JXL q=80, AVIF q=80
-
-libjxl version: 0.9.1, cavif-rs version: 1.5.5
+### libjxl v0.12.0 q=100 (lossless), libavif v1.4.2 q=90
 
 | Input | Original size | JXL compression ratio | JXL processing time | AVIF compression ratio | AVIF processing time |
-|-------|---------------|-----------------------|---------------------|------------------------|----------------------|
-| bar.jpg | 302KB | -71% | 0.131s | -76% | 1.803s |
-| boxes.jpg | 36KB | -39% | 0.06s | -64% | 0.558s |
-| central-asia-elevation-map.png | 2104KB | -85% | 0.786s | -91% | 7.836s |
-| curtains.gif | 1092KB | -76% | 0.97s | -98% | 5.561s |
-| eclipse.gif | 130KB | 294% | 1.706s | -70% | 2.846s |
-| emilia-clarke.gif | 3174KB | -45% | 2.175s | -98% | 12.185s |
-| mclaren.png | 6223KB | -97% | 0.968s | -99% | 10.651s |
-| misinformation.jpg | 33KB | -34% | 0.063s | -55% | 0.718s |
-| organic_chemistry.png | 274KB | 134% | 3.613s | 8% | 30.316s |
-| sky_plants.jpg | 5156KB | -61% | 1.667s | -66% | 35.361s |
-| space.jpg | 9048KB | -86% | 1.526s | -86% | 21.839s |
-| subway-escalators.jpg | 10982KB | -63% | 7.762s | -51% | 74.183s |
+|:-:|:-:|:-:|:-:|:-:|:-:|
+| bar.jpg | 302KB | -14% | 0.05s | -34% | 0.285s |
+| boxes.jpg | 36KB | -20% | 0.02s | -28% | 0.179s |
+| central-asia-elevation-map.png | 2104KB | -31% | 1.146s | -78% | 1.965s |
+| curtains.gif | 1092KB | -48% | 1.282s | -82% | 6.852s |
+| eclipse.gif | 130KB | -36% | 1.179s | -52% | 1.634s |
+| emilia-clarke.gif | 3174KB | -15% | 4.059s | -70% | 16.586s |
+| mclaren.png | 6223KB | -27% | 2.136s | -90% | 0.927s |
+| misinformation.jpg | 33KB | -13% | 0.018s | -10% | 0.213s |
+| organic_chemistry.png | 274KB | +14% | 1.818s | +38% | 2.89s |
+| sky_plants.jpg | 5156KB | -19% | 0.273s | -22% | 3.502s |
+| space.jpg | 9048KB | -20% | 0.496s | -64% | 2.955s |
+| subway-escalators.jpg | 10982KB | -13% | 1.065s | -2% | 10.719s |
+| waldo.jpg | 6117KB | -35% | 0.321s | -25% | 3.932s |
