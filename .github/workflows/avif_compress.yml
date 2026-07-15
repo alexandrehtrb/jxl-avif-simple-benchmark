@@ -25,7 +25,9 @@ jobs:
         run: |
           sudo apt update
           sudo apt install ffmpeg
-          sudo apt install libavif-dev=$LIBAVIF_VERSION
+          curl -O https://github.com/AOMediaCodec/libavif/releases/download/v$LIBAVIF_VERSION/linux-artifacts.zip
+          tar zxvf linux-artifacts.zip -C ./libavif/
+          ls ./libavif/
         env:
           LIBAVIF_VERSION: ${{ inputs.libavif_version }}
       
@@ -45,9 +47,9 @@ jobs:
             # https://codelabs.developers.google.com/codelabs/avif#5
             if ($isGif) {
               ffmpeg -i $inputFile.FullName -pix_fmt yuv420p -f yuv4mpegpipe "${fileNameWithoutExtension}.y4m"
-              avifenc -q $env:QUALITY_FACTOR "${fileNameWithoutExtension}.y4m" $outputFilePath            
+              ./libavif/avifenc -q $env:QUALITY_FACTOR "${fileNameWithoutExtension}.y4m" $outputFilePath            
             } else {
-              avifenc -q $env:QUALITY_FACTOR $inputFile $outputFilePath            
+              ./libavif/avifenc -q $env:QUALITY_FACTOR $inputFile $outputFilePath            
             }
             $sw.Stop()
             $elapsedTimeInSeconds = [math]::ceiling($sw.ElapsedMilliseconds)
