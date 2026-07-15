@@ -1,0 +1,65 @@
+name: AVIF compression of GIFs
+
+on:
+  workflow_call:
+    inputs:
+      libavif_version:
+        required: true
+        type: string
+      quality_factor:
+        required: true
+        type: string
+
+jobs:
+  avif_compress:
+    runs-on: ubuntu-latest
+    steps:
+    
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+          
+      - name: Install ffmpeg and libavif
+        shell: bash
+        run: |
+          sudo apt update
+          sudo apt install ffmpeg
+          sudo apt install libavif-bin=$LIBAVIF_VERSION
+        env:
+          LIBAVIF_VERSION: ${{ inputs.libavif_version }}
+      
+      - name: Compress images and measure times
+        shell: pwsh
+        run: |
+          $inputFiles = Get-ChildItem -Path '.\inputs\' -File;
+          mkdir ./outputs/
+          $sw = [System.Diagnostics.Stopwatch]::new()
+          # careful: don't use $input as variable in PowerShell (forbidden name)
+          foreach ($inputFile in $inputFiles)
+          {
+            $fileNameWithoutExtension = $($inputFile.Name.ToLower().Replace(".jpg","").Replace(".png","").Replace(".gif",""))
+            $outputFilePath = "./outputs/${fileNameWithoutExtension}.avif"
+            $isGif = $inputFile.Name.ToLower() -like "*.gif"
+            $sw.Restart()
+            # https://codelabs.developers.google.com/codelabs/avif#5
+            if ($isGif) {
+              ffmpeg -i $inputFile.FullName -pix_fmt yuv420p -f yuv4mpegpipe "${fileNameWithoutExtension}.y4m"
+              avifenc -q $env:QUALITY_FACTOR "${fileNameWithoutExtension}.y4m" $outputFilePath            
+            } else {
+              avifenc -q $env:QUALITY_FACTOR $inputFile $outputFilePath            
+            }
+            $sw.Stop()
+            $elapsedTimeInSeconds = [math]::ceiling($sw.ElapsedMilliseconds)
+            # changing the name of output file to hold elapsed milliseconds
+            Rename-Item $outputFilePath "${fileNameWithoutExtension}.${elapsedTimeInSeconds}ms.avif"
+          }
+        env:
+          QUALITY_FACTOR: ${{ inputs.quality_factor }}
+
+      - name: Upload to workflow results
+        uses: actions/upload-artifact@v7
+        with:
+          compression-level: 0 # no need to compress because AVIF already compressed
+          name: avif_results
+          path: ./outputs/
