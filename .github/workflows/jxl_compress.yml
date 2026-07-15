@@ -23,11 +23,10 @@ jobs:
       - name: Download libjxl
         shell: pwsh
         run: |
-          $url = "https://github.com/libjxl/libjxl/releases/download/v${env:LIBJXL_VERSION}/jxl-linux-x86_64-static.tar.lz"
-          $destinationFile = "libjxl_linux.tar.lz"
-          Invoke-WebRequest -Uri $url -OutFile $destinationFile
+          curl -O "https://github.com/libjxl/libjxl/releases/download/v${env:LIBJXL_VERSION}/jxl-linux-x86_64-static.tar.lz"
           mkdir libjxl
-          tar xf libjxl_linux.tar.lz -C ./libjxl/
+          tar xf jxl-linux-x86_64-static.tar.lz -C ./libjxl/
+          ls ./libjxl/
         env:
           LIBJXL_VERSION: ${{ inputs.libjxl_version }}
       

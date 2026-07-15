@@ -25,7 +25,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install ffmpeg
-          sudo apt install libavif-bin=$LIBAVIF_VERSION
+          sudo apt install libavif-dev=$LIBAVIF_VERSION
         env:
           LIBAVIF_VERSION: ${{ inputs.libavif_version }}
       
