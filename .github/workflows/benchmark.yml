@@ -23,9 +23,6 @@ on:
         required: true
         default: 90
         type: number
-  push:
-    branches:
-      - master
 
 jobs:
   jxl_compression:
@@ -37,7 +34,7 @@ jobs:
   avif_compression:
     uses: ./.github/workflows/avif_compress.yml
     with:
-      cavif_version: ${{ inputs.libavif_version }}
+      libavif_version: ${{ inputs.libavif_version }}
       quality_factor: ${{ inputs.libavif_quality_factor }}
 
   make_results_table:
