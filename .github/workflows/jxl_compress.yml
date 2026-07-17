@@ -43,10 +43,17 @@ jobs:
           {
             $fileNameWithoutExtension = $($inputFile.Name.ToLower().Replace(".jpg","").Replace(".png","").Replace(".gif",""))
             $outputFilePath = "./outputs/${fileNameWithoutExtension}.jxl"
-            $sw.Restart()
-            ./libjxl/tools/cjxl $inputFile.FullName $outputFilePath -q $env:QUALITY_FACTOR
+            $sw.Restart()            
+            if ($inputFile.Name -like "*.jpg")
+            {
+              $isLosslessJpeg = if ($env:QUALITY_FACTOR -eq "100") { "1" } else { "0" }
+              ./libjxl/tools/cjxl $inputFile.FullName $outputFilePath -q $env:QUALITY_FACTOR --lossless_jpeg=$isLosslessJpeg
+            }
+            else
+            {
+              ./libjxl/tools/cjxl $inputFile.FullName $outputFilePath -q $env:QUALITY_FACTOR
+            }
             $sw.Stop()
-
             $elapsedTimeInSeconds = [math]::ceiling($sw.ElapsedMilliseconds)
             # changing the name of output file to hold elapsed milliseconds
             Rename-Item $outputFilePath "${fileNameWithoutExtension}.${elapsedTimeInSeconds}ms.jxl"
